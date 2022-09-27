@@ -1,4 +1,3 @@
-from turtle import title
 from flask import Flask,request,jsonify, make_response,render_template
 import psycopg2 
 import os 
