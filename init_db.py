@@ -33,17 +33,7 @@ cur.execute('CREATE TABLE Access_token (id serial PRIMARY KEY,'
                                  'date_added date DEFAULT CURRENT_TIMESTAMP);'
                                  )
 
-# Insert data into the table
 
-# cur.execute('INSERT INTO users (username, email, password, fname, lname, address)'
-#             'VALUES (%s, %s, %s, %s, %s, %s)',
-#             ('manoharborana',
-#              'manohar.borana@yudiz.com',
-#              'Manohar@123',
-#              'Manohar',
-#              'Borana',
-#              '4922/Vikashnagar,Gota, Ahmedabad, Gujarat')
-#             )
 
 conn.commit()
 

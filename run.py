@@ -14,17 +14,17 @@ app=Flask(__name__)
  
 app.config['MAIL_SERVER']='smtp.gmail.com' 
 app.config['MAIL_PORT'] = 465 
-app.config['MAIL_USERNAME'] = 'manohar.borana@yudiz. com'
-app.config['MAIL_PASSWORD'] = "Yudiz@123" 
+app.config['MAIL_USERNAME'] = os.environ['USERNAME']
+app.config['MAIL_PASSWORD'] = os.environ['PASSWORD'] 
 app.config['MAIL_USE_TLS'] = False 
 app.config['MAIL_USE_SSL'] = True 
 mail = Mail(app) 
  
-key=b'2B14Otx_dizcQgJ226JL4cQdcZcNv3usGiCErQJ3V8E=' 
+key=os.environ['key'] 
 fernet = Fernet(key) 
  
  
-app.config['SECRET_KEY']='h34jkh24jkjkbnjk' 
+app.config['SECRET_KEY']=os.environ['SECRET_KEY']
  
 def token_required(f): 
     @wraps(f) 
@@ -212,7 +212,7 @@ def forgot_password():
             try: 
                 msg = Message( 
                     'OTP Verfication', 
-                    sender ='manohar.borana@yudiz.co m',
+                    sender =os.environ['USERNAME'],
                     recipients = [email] 
                 ) 
                 msg.body = f'hello Your OTP is here  {otp}.'
