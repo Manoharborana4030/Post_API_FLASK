@@ -35,24 +35,24 @@ def token_required(f):
         if 'Authorization' in request.headers: 
             token = request.headers['Authorization'] 
         if not token: # throw error if no token prov ided
-            return make_response(jsonify({"message":  "A valid token is missing!"}), 401)
+            return make_response(jsonify({"message": "A valid token is missing!"}), 401)
         try: 
-            data = jwt.decode(token, app.config['SEC RET_KEY'], algorithms=['HS256'])
+            data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
             conn=get_db_connection() 
             cur=conn.cursor() 
-            cur.execute('SELECT * FROM users where u sername=%s;',(data['username'],))
+            cur.execute('SELECT * FROM users where username=%s;',(data['username'],))
             current_user =cur.fetchone() 
             cur.close() 
             conn.close() 
         except: 
-            return make_response(jsonify({"message":  "Invalid token!"}), 401)
+            return make_response(jsonify({"message":"Invalid token!"}), 401)
  
         return f(current_user, *args, **kwargs) 
     return decorator 
  
 def get_db_connection(): 
-    conn = psycopg2.connect(host='localhost', 
-                            database='flask_redis_database',
+    conn = psycopg2.connect(host=os.environ['DB_HOST'], 
+                            database=['Database'],
                             user=os.environ['DB_USERNAME'],
                             password=os.environ['DB_PASSWORD'])
     return conn 
@@ -79,7 +79,7 @@ def home(current_user):
             } 
      
  
-@app.route('/login/',methods=('GET', 'POST')) 
+@app.route('/login/',methods=('GET','POST')) 
 def login(): 
     if request.method=='POST': 
         status = None 
@@ -87,12 +87,12 @@ def login():
         cur=conn.cursor() 
         username=request.json.get('username') 
         password=request.json.get('password') 
-        if (username is None or password is None) or  (username=='' or password==''):
+        if (username is None or password is None) or (username=='' or password==''):
             return  { 
                         'status':400, 
-                        'Message':"Please Enter User name,Password and email!!"
+                        'Message':"Please Enter Username,Password and email!!"
                     } 
-        cur.execute('SELECT * FROM users where usern ame=%s;',(username,))
+        cur.execute('SELECT * FROM users where username=%s;',(username,))
         query=cur.fetchone() 
         try: 
             if query: 
@@ -101,12 +101,12 @@ def login():
                 if check_password==password: 
                     try: 
                         encrypted = fernet.encrypt(str(query).encode())
-                        resp = encrypted.decode('utf -8')
+                        resp = encrypted.decode('utf-8')
                         # print(resp) 
                         status = True 
                     except Exception as e: 
                         status = False 
-                        print("Error occured at line  no. 51", e)
+                        print("Error occured at line no. 51", e)
                     if status: 
                         token = jwt.encode({'usernam e':username}, app.config['SECRET_KEY'], 'HS256')
                         print(token) 
@@ -128,7 +128,7 @@ def login():
             else: 
                 return  { 
                             'status':200, 
-                            'Message':"Please Enter  valid username"
+                            'Message':"Please Enter valid username"
                         }  
         except Exception as e: 
             print("Error occured at line no. 119", e )
@@ -157,29 +157,29 @@ def register():
         password = request.json.get('password') 
         email=request.json.get('email') 
         address=request.json.get('address') 
-        if (username is None or password is None or  email is None) or (username=='' or password=='' or email==''):
+        if (username is None or password is None or email is None) or (username=='' or password=='' or email==''):
             return  { 
                         'status':400, 
                         'Message':"Please Enter User name,Password and email!!"
                     } 
         try: 
-            cur.execute('SELECT * FROM users where u sername=%s;',(username,))
+            cur.execute('SELECT * FROM users where username=%s;',(username,))
             query=cur.fetchone() 
             if query: 
                 return  { 
                             'status':400, 
-                            'Message':"Username Alre ady Exits!!"
+                            'Message':"Username Already Exits!!"
                         } 
-            password_encrypted = fernet.encrypt(str( password).encode())
-            password = password_encrypted.decode('ut f-8')
+            password_encrypted = fernet.encrypt(str(password).encode())
+            password = password_encrypted.decode('utf-8')
             try: 
-                cur.execute('INSERT INTO users (user name, email, password, fname, lname, address)'
-                            'VALUES (%s, %s, %s, %s,  %s, %s)',
+                cur.execute('INSERT INTO users (username, email, password, fname, lname, address)'
+                            'VALUES (%s, %s, %s, %s, %s, %s)',
                             (username, email, password, fname,lname,address))
                 conn.commit() 
                 return  { 
                             'status':200, 
-                            'Message':"User Succesfu lly registerd!!"
+                            'Message':"User Succesfully registerd!!"
                         } 
             except Exception as e: 
                 print("Error occured at 114",e) 
@@ -227,14 +227,14 @@ def forgot_password():
                 conn.close() 
                 return  { 
                             'status':200, 
-                            'Message':'OTP send Succ efully to your Email ID.'
+                            'Message':'OTP send Succefully to your Email ID.'
                         } 
             except Exception as e: 
                 print("Error Occured as ",e)             
         else: 
             return  { 
                         'status':200, 
-                        'Message':"Please Enter vali d email!!"
+                        'Message':"Please Enter valid email!!"
                     } 
     return  { 
                 'status':200, 
@@ -251,21 +251,21 @@ def change_password():
         if (otp is None) or (otp==''): 
             return  { 
                         'status':400, 
-                        'Message':"Please Provide OT P!!"
+                        'Message':"Please Provide OTP!!"
                     } 
-        cur.execute('SELECT * FROM users where OTP=% s;',(otp,))
+        cur.execute('SELECT * FROM users where OTP=%s;',(otp,))
         query=cur.fetchone() 
         if query: 
-            new_password=request.json.get('new_passw ord')
-            confirm_password=request.json.get('confi rm_password')
+            new_password=request.json.get('new_password')
+            confirm_password=request.json.get('confirm_password')
             if (new_password is None or confirm_password is None) or (new_password=='' or confirm_password==''):
                 return  { 
                             'status':400, 
-                            'Message':"Please Enter  Password!!"
+                            'Message':"Please Enter Password!!"
                         } 
             if new_password==confirm_password: 
-                password_encrypted = fernet.encrypt( str(confirm_password).encode())
-                password = password_encrypted.decode ('utf-8')
+                password_encrypted = fernet.encrypt(str(confirm_password).encode())
+                password = password_encrypted.decode('utf-8')
                 cur.execute('''UPDATE users  
                             SET password = %s  
                             WHERE username=%s;''',(password,query[1],))
@@ -274,12 +274,12 @@ def change_password():
                 conn.close() 
                 return  { 
                             'status':200, 
-                            'Message':"Your Password  has been updated.!!!"
+                            'Message':"Your Password has been updated.!!!"
                         } 
             else: 
                 return  { 
                             'status':200, 
-                            'Message':"Your Password  is Not matched"
+                            'Message':"Your Password is Not matched"
                         } 
         else: 
             return  { 
