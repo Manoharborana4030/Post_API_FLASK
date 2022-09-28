@@ -3,7 +3,7 @@ import psycopg2
 
 
 conn = psycopg2.connect(host=os.environ['DB_HOST'], 
-                            database=os.environ['Database'],
+                            database=os.environ['DB_NAME'],
                             user=os.environ['DB_USERNAME'],
                             password=os.environ['DB_PASSWORD'])
 
