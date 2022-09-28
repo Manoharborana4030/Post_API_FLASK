@@ -19,7 +19,7 @@ app.config['MAIL_USE_TLS'] = False
 app.config['MAIL_USE_SSL'] = True 
 mail = Mail(app) 
  
-key=os.environ['key'] 
+key=os.environ['ENC_KEY'] 
 print(key)
 key=bytes(key,"utf-8")
 fernet = Fernet(key) 
