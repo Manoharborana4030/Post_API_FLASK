@@ -51,9 +51,9 @@ def token_required(f):
  
 def get_db_connection(): 
     conn = psycopg2.connect(host='localhost', 
-                            database='flask_redis_da tabase',
-                            user=os.environ['DB_USER NAME'],
-                            password=os.environ['DB_ PASSWORD'])
+                            database='flask_redis_database',
+                            user=os.environ['DB_USERNAME'],
+                            password=os.environ['DB_PASSWORD'])
     return conn 
  
  
