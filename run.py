@@ -38,6 +38,7 @@ def token_required(f):
             return make_response(jsonify({"message": "A valid token is missing!"}), 401)
         try: 
             data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
+            print("DATA:",data)
             conn=get_db_connection() 
             cur=conn.cursor() 
             cur.execute('SELECT * FROM users where username=%s;',(data['username'],))
