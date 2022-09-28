@@ -290,7 +290,7 @@ def change_password():
  
     return  { 
                 'status':200, 
-                'Message':"Method is not valid" 
+                'Message':"Method is not   sds valid" 
             } 
  
 from flask import send_file
