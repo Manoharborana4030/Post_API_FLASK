@@ -109,7 +109,7 @@ def login():
                         status = False 
                         print("Error occured at line no. 51", e)
                     if status: 
-                        token = jwt.encode({'usernam e':username}, app.config['SECRET_KEY'], 'HS256')
+                        token = jwt.encode({'username':username}, app.config['SECRET_KEY'], 'HS256')
                         print(token) 
                         return  {  
                                     'status' : 200,  
